@@ -1,39 +1,29 @@
-#!/usr/bin/env python
-import numpy as np
+#!/usr/bin/env pyhton3
 
-#Evitar variables globales
+import numpy as np # Biblioteca para calculos matematicos
+import matplotlib.pyplot as plt # Biblioteca para crear gáficos
 
-x_Length = 1
-# El delta_x lo escogemos nosotros, escoger uno con el que la gráfica no tenga muchos números
-delta_x = 0.25
+puntos_x = np.linspace( 0, 10, 10 ) # puntos en eje x de [0-a=10]
+puntos_y = np.linspace( 0, 20, 20 ) # puntos en eje y de [0-b=20]
 
-y_Length = 1
-# Igual que el delta_x
-delta_y = 0.25
+X_2D, Y_2D = np.meshgrid( puntos_x, puntos_y ) # convierte estos vectores de 1D a 2D para ver cada punto en el espacio como una grilla en el eje cartesiano
 
-#c = 1  para simplificar
-c = 1
+def temperaturas( x, y, c, t): # Diferencias finitas para calcular la temperatura en cada punto
+    dx = x[1] - x [0]
+    dy = y[1] - y[0]
+    
+    return Ti
 
-# Valor final de t
-t_fin = 1
-# delta t se escoge tal q:
-# delta_t < (delta_x**2 + delta_y**2)/8
-delta_t = 0.015
+fourier_t = np.fft.fft(temperaturas( ), norm = "forward" ) # optimizamos el calculo usando transformadas de fourier para evaluar la temperatura en cada punto de la grilla
 
-#cantidad de subdivisiones
-t_subdivions_count = (t_fin // delta_t) + 1
-x_subdivions_count = (x_Length // delta_x) + 1
-y_subdivions_count = (y_Length // delta_y) + 1
+fig = plt.figure() # Inicializa la figura
 
-# Arreglo inicializado con ceros
-T = np.zeroes(x_subdivions_count, y_subdivions_count, t_subdivions_count)
+grafico = fig.add_subplot( 121 ) # Genera una figura en en la parte izquierda
 
-# Condiciones iniciales:
+grafico.imshow( temperaturas() , cmap="copper", extent=[ X_2D[0], X_2D[1], Y_2D[0], Y_2D[1] ], ) # Crea un gráfico en 2D para visualizar las temperaturas en distintas posiciones del espacio con colores copper y con limites iguales a los de "x" y "y"  
+ 
+grafico = fig.add_subplot( 122, projection = "3d" ) # Crea otra figura al lado derecho en 3D
 
-# Para T(0,y,t)
-for i in x_subdivions_count:
-    #
-    T[0, y_subdivions_count, t_subdivions_count] = 100
+grafico.plot_surface(X, Y, temperaturas(), cmap="copper") # Crea la gráfica 3d de superficie de calor
 
-
-T(x,y,t+1) = T(x,y,t) + ((c**2)*(delta_t / delta_x**2) * (T(x+1,y,t) - 2*T(x,y,t) + T(x-1,y,t)) + ((c**2) * (delta_t / delta_y**2) * (T(x,y+1,t) - 2*T(x,y,t) + T(x,y,t-1))
+plt.show() # Muestra las 2 gráficas subploteadas
