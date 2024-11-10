@@ -7,7 +7,7 @@ def temperaturas(cond_inicial):
     
     phi = np.zeros((101, 201), dtype=float) # grilla bidimensional 100 x 200
     
-    phi[:, 201] = cond_inicial # condicion inical en borde derecho de grilla
+    phi[0,:] = cond_inicial # condicion inical en borde derecho de grilla
     
     phi_copy = phi.copy() # Para comparar el error con la nueva grilla
     delta = 1.0 # Diferencia entre phi inicial y el modificado con los valores de T
@@ -58,3 +58,4 @@ plt.imshow(fourier_t)
 plt.gray()
 plt.show()
 ~            
+
