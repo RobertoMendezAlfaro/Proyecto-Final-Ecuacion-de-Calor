@@ -1,29 +1,60 @@
 #!/usr/bin/env pyhton3
 
 import numpy as np # Biblioteca para calculos matematicos
-import matplotlib.pyplot as plt # Biblioteca para crear gáficos
+import matplotlib.cm as cm # Biblioteca para crear gáficos
 
-puntos_x = np.linspace( 0, 10, 10 ) # puntos en eje x de [0-a=10]
-puntos_y = np.linspace( 0, 20, 20 ) # puntos en eje y de [0-b=20]
-
-X_2D, Y_2D = np.meshgrid( puntos_x, puntos_y ) # convierte estos vectores de 1D a 2D para ver cada punto en el espacio como una grilla en el eje cartesiano
-
-def temperaturas( x, y, c, t): # Diferencias finitas para calcular la temperatura en cada punto
-    dx = x[1] - x [0]
-    dy = y[1] - y[0]
+def temperaturas(cond_inicial):
     
-    return Ti
+    phi = np.zeros((101, 201), dtype=float) # grilla bidimensional 100 x 200
+    
+    phi[:, 201] = cond_inicial # condicion inical en borde derecho de grilla
+    
+    phi_copy = phi.copy() # Para comparar el error con la nueva grilla
+    delta = 1.0 # Diferencia entre phi inicial y el modificado con los valores de T
 
-fourier_t = np.fft.fft(temperaturas( ), norm = "forward" ) # optimizamos el calculo usando transformadas de fourier para evaluar la temperatura en cada punto de la grilla
+    while delta > 1e-5: # Verifica que el error sea sumamente pequeño
+        for i in range(101):
+            for j in range(201):
+                
+                if i == 0 or i == M or j == 0 or j == M: # Condición de frontera: T = 280 K en bordes
+                    phi[i, j] = 280 
+                
+                else: # Método Gauss Seidel para aproximar el cambio de T en el espacio con el tiempo
 
-fig = plt.figure() # Inicializa la figura
+                    phi[i,j] = (1 + omega) * 0.25 * (phi[i + 1, j] + phi[i - 1, j] + phi[i, j + 1] + phi[i, j - 1]
+        
+        delta = np.max(np.abs(phi - phi_copy)) # Estimamos la diferencia
 
-grafico = fig.add_subplot( 121 ) # Genera una figura en en la parte izquierda
+        phi_copy = phi.copy() # Ponemos la nueva grilla como la antigua para compararlo con la nueva en la siguiente iteración
+        
+    return phi
 
-grafico.imshow( temperaturas() , cmap="copper", extent=[ X_2D[0], X_2D[1], Y_2D[0], Y_2D[1] ], ) # Crea un gráfico en 2D para visualizar las temperaturas en distintas posiciones del espacio con colores copper y con limites iguales a los de "x" y "y"  
- 
-grafico = fig.add_subplot( 122, projection = "3d" ) # Crea otra figura al lado derecho en 3D
+# Condión Inicial 1: Ti = 0
+fourier_t = np.fft.fft(temperaturas(0), norm = "forward" ) # optimizamos el cálculo usando transformadas de fourier para evaluar la temperatura en cada punto de la grilla
 
-grafico.plot_surface(X, Y, temperaturas(), cmap="copper") # Crea la gráfica 3d de superficie de calor
+plt.imshow(fourier_t)
+plt.gray()
+plt.show()
 
-plt.show() # Muestra las 2 gráficas subploteadas
+# Condión Inicial 2: Ti = 50 K
+fourier_t = np.fft.fft(temperaturas(50), norm = "forward" ) 
+
+plt.imshow(fourier_t)
+plt.gray()
+plt.show()
+
+# Condión Inicial 3: Ti = 170 K
+fourier_t = np.fft.fft(temperaturas(170), norm = "forward" ) 
+
+plt.imshow(fourier_t)
+plt.gray()
+plt.show()
+~       
+
+# Condión Inicial 4: Ti = 300 K
+fourier_t = np.fft.fft(temperaturas(300), norm = "forward" ) 
+
+plt.imshow(fourier_t)
+plt.gray()
+plt.show()
+~            
