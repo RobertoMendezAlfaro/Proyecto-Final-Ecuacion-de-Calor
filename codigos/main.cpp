@@ -15,7 +15,7 @@ int main(){
 
   //LLamar a la funcion para calcular temperaturas
 
-  std::cout << "A continuación se resuelve la ecuación de calor:.\n"
+  std::cout << "A continuación se resuelve la ecuación de calor:.\n";
   temperaturas(ancho, alto, temp_sup, temp_lat, temp_init, omega, frames, iterations_per_frame);
   
   return 0;
