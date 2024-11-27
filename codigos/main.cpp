@@ -10,7 +10,8 @@ int main(){
   int ancho = 40;
   int alto = 80;
   double omega = 0.0;
-  int iteraciones = 0;
+  int frames = 10;
+  int interations_per_frame = 200;
 
   //LLamar a la funcion para calcular temperaturas
   
