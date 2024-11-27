@@ -15,6 +15,6 @@ class EcuacionCalor {
 
 //Declarar la funcion temperaturas para poder compilar main.cpp
 
-void temperaturas(int ancho, int alto, double temp_sup, double temp_lat, double temp_init, double omega, int frames, int iterations_per_frame, int &iterations_out);
+void temperaturas(int ancho, int alto, double temp_sup, double temp_lat, double temp_init, double omega, int frames, int iterations_per_frame);
 
 #endif
