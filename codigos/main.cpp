@@ -14,11 +14,9 @@ int main(){
   int interations_per_frame = 200;
 
   //LLamar a la funcion para calcular temperaturas
+
+  std::cout << "A continuación se resuelve la ecuación de calor:.\n"
+  temperaturas(ancho, alto, temp_sup, temp_lat, temp_init, omega, frames, iterations_per_frame);
   
-
-  std::cout << "Número de iteraciones total: " << iteraciones << std::endl;
-
-
-
   return 0;
 }
