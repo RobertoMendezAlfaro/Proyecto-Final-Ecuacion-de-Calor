@@ -11,7 +11,7 @@ int main(){
   int alto = 80;
   double omega = 0.0;
   int frames = 10;
-  int interations_per_frame = 200;
+  int iterations_per_frame = 200;
 
   //LLamar a la funcion para calcular temperaturas
 
