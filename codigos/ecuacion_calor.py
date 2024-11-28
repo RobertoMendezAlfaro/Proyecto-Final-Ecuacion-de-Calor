@@ -1,12 +1,15 @@
 #!/usr/bin/env python
 
-import numpy as np # Biblioteca para calculos matematicos
+import numpy as np
 import matplotlib
 from matplotlib import cm
 import matplotlib.pyplot as plt
-from matplotlib.animation import FuncAnimation, FFMpegWriter
-#import matplotlib.cm as cm # Biblioteca para crear gáficos
+from matplotlib.animation import FuncAnimation
 
+# Función para analizar la evolución temporal de una placa con temperatura inicial temp_init a
+# la que se le aplica una temperatura de temp_sup en el borde superior y una de temp_lat en el
+# borde izquierdo. ancho y alto definien el tamaño de la grilla, omega es un parámetro del método
+# utilizado y frames es la cantidad de imágenes que deseamos guardar del sistema
 def temperaturas(temp_sup, temp_lat, temp_init, ancho, alto, omega, frames):
 
     phi = np.zeros((ancho + 1, alto + 1), dtype=float) # Grilla bidimensional
@@ -21,17 +24,17 @@ def temperaturas(temp_sup, temp_lat, temp_init, ancho, alto, omega, frames):
 
     phi_copy = phi.copy() # Para comparar el error con la nueva grilla
 
-    animation = np.zeros((frames, ancho, alto))
+    animation = np.zeros((frames, ancho, alto))# Para almacenar copias del sistema para animar
 
     iterations = 0 # Contador para las iteraciones
 
-    iterations_per_frame = 13 # Cada cuantas iteraciones se desea guarda una copia del sistema
+    iterations_per_frame = 20 # Cada cuantas iteraciones se desea guarda una copia del sistema
 
-    frame_counter = 0
+    frame_counter = 0 # Contador para los fotogramas guardados
 
-    delta = 1
+    delta = 1 # Tolerancia de precisión
 
-    while delta > 1e-5: #
+    while delta > 1e-7:
         # Método Gauss Seidel para aproximar el cambio de T en el espacio con el tiempo
         for i in range(1, ancho):
 
@@ -49,9 +52,15 @@ def temperaturas(temp_sup, temp_lat, temp_init, ancho, alto, omega, frames):
 
 
         delta = np.max(np.abs(phi - phi_copy))
+
         iterations += 1
-        phi_copy = phi.copy() # Ponemos la nueva grilla como la antigua para compararlo con la  nueva en la siguiente iteración
-    print(iterations)
+
+        phi_copy = phi.copy() # Ponemos la nueva grilla como la antigua para compararla
+                              # con la  nueva en la siguiente iteración
+
+    #print(iterations)  # Este print se debe habilitar para conocer la cantida de iteraciones
+                        # para ajustar la animación dependiendo de las condiciones iniciales
+
     return animation
 
 
@@ -61,7 +70,7 @@ total_frames = 50 # Cantidad de fotogramas que se desea que muestre la animació
 # Implementación de la animación
 
 # Se guardan los resultados de la función iterativa
-heatmap = temperaturas(100, 200, 20, 40, 80, 0, total_frames)
+heatmap = temperaturas(100, 200, 20, 50, 100, 0, total_frames)
 
 fig, ax = plt.subplots()
 
@@ -77,8 +86,3 @@ def animate(frame):
 
 anim = FuncAnimation(fig, animate, frames=total_frames)
 plt.show()
-#video = anim.to_html5_video()
-#html = display.HTML(video)
-#display.display(html)
-#plt.close()
-
