@@ -23,16 +23,15 @@ def temperaturas(temp_sup, temp_lat, temp_init, ancho, alto, omega, frames):
 
     animation = np.zeros((frames, ancho, alto))
 
-    iterations = -1 # Contador para las iteraciones
+    iterations = 0 # Contador para las iteraciones
 
-    iterations_per_frame = 200 # Cada cuantas iteraciones se desea guarda una copia del sistema
+    iterations_per_frame = 13 # Cada cuantas iteraciones se desea guarda una copia del sistema
 
     frame_counter = 0
 
     delta = 1
 
     while delta > 1e-5: #
-        iterations += 1
         # Método Gauss Seidel para aproximar el cambio de T en el espacio con el tiempo
         for i in range(1, ancho):
 
@@ -50,66 +49,34 @@ def temperaturas(temp_sup, temp_lat, temp_init, ancho, alto, omega, frames):
 
 
         delta = np.max(np.abs(phi - phi_copy))
-
+        iterations += 1
         phi_copy = phi.copy() # Ponemos la nueva grilla como la antigua para compararlo con la  nueva en la siguiente iteración
     print(iterations)
     return animation
 
 
-#heatmap = temperaturas(100, 200, 20, 40, 80, 0, 10)
 
-#fig = plt.figure()
-#line, = plt.plot([])
+total_frames = 50 # Cantidad de fotogramas que se desea que muestre la animación
 
-#def animate(frame):
- #   images = heatmap[frame, :, :]
-  #  line.set_data(images)
+# Implementación de la animación
 
-#anim = FuncAnimation(fig, animate, frames = 10)
-#video = anim.to_html5_video()
-#html = display.HTML(video)
-#display.display(html)
-#plt.close()
+# Se guardan los resultados de la función iterativa
+heatmap = temperaturas(100, 200, 20, 40, 80, 0, total_frames)
+
+fig, ax = plt.subplots()
+
+# Se crea el fotograma inicial, aquí se escoge el esquema de colores con cmap
+animation = ax.imshow(heatmap[0,:,:], cmap="inferno")
+
+# Se crea la función que va pasando los fotogramas
+def animate(frame):
+    new_frame = heatmap[frame,:,:]
+    animation.set_data(new_frame)
+    return animation
 
 
-
-
-#print(temperaturas(100, 200, 20, 40, 80, 0, 10))
-
-
-plt.imshow(temperaturas(100, 200, 20, 40, 80 ,0, 10)[9, :, :], cmap="inferno")
+anim = FuncAnimation(fig, animate, frames=total_frames)
 plt.show()
-
-
-#writer = FFMpegWriter(fps=15)
-
-#fig, ax = plt.subplots()
-
-#with writer.saving(fig, "heatmap.mp4", 100):
-#    for frame in range(30): # Range = numbers of frames used for animation
-
-
-
-#        heatmap = temperaturas(100, 10, 20, 0, 10 ,20, 30)
-
- #       ax.plot(heatmap[frame])
-
-  #      writer.grab_frame()
-#        plt.cla()
-
-
-
-
-#temperaturas(100, 40, 80, 0, 10, 2600)
-
-#fig = plt.figure()
-#line, = plt.plot([])
-#plt.xlabel(r'$x$')
-#plt.ylabel(r'$\phi(x,t)$')
-#plt.xlim(0.0, 1.0)
-#plt.ylim(-0.05, 0.05)
-
-#anim = FuncAnimation(fig, temperaturas(100, 40, 80, 0, 10, 2600, 30), frames = 30, interval = 10)
 #video = anim.to_html5_video()
 #html = display.HTML(video)
 #display.display(html)
