@@ -3,7 +3,7 @@
 #include <vector>
 #include <cmath>
 #include "ecuacion_calor.hpp"
-
+#include <omp.h>
 
 
 // Función para resolver la ecuación de calor en 2D usando el método de Gauss-Seidel
@@ -14,6 +14,7 @@ void temperaturas(int ancho, int alto, double temp_sup, double temp_lat, double 
     std::vector<std::vector<double>> phi_copy = phi; // Para comparar cambios
 
     // condiciones de frontera
+
     for (int j = 0; j <= alto; ++j) {
         phi[0][j] = temp_sup; // Borde superior
     }
@@ -32,6 +33,10 @@ void temperaturas(int ancho, int alto, double temp_sup, double temp_lat, double 
     // Iteración hasta que el cambio sea pequeño o se alcance el máximo 
     while (delta > 1e-5) {
         delta = 0.0; // Reinicia el cambio máximo
+		     
+	#pragma omp parallel //inicio de region en paralelo
+        {
+            #pragma omp for reduction(max: delta) //paralelizacion de for i con reduction en delta ya que los hilos la accesan de modo concurrente	  
         for (int i = 1; i < ancho; ++i) {
             for (int j = 1; j < alto; ++j) {
                 // Aplicar fórmula de Gauss-Seidel con sobrerrelajación
@@ -41,7 +46,7 @@ void temperaturas(int ancho, int alto, double temp_sup, double temp_lat, double 
                 phi[i][j] = nuevo_valor; // Actualizar temperatura
             }
         }
-
+	}
         // Guardar el estado de la grilla para los frames si es necesario
         if (iterations % iterations_per_frame == 0 && frame_counter < frames) {
             for (int i = 0; i < ancho; ++i) {
