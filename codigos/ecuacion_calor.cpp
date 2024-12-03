@@ -24,7 +24,7 @@ void temperaturas(int ancho, int alto, double temp_sup, double temp_lat, double 
     phi[0][0] = (temp_sup + temp_lat) / 2.0; // Esquina superior izquierda
 
     // Almacenamiento de frames para análisis
-    std::vector<std::vector<std::vector<double>>> animation(frames, std::vector<std::vector<double>>(ancho, std::vector<double>(alto)));
+    std::vector<std::vector<std::vector<double>>> animation(frames, std::vector<std::vector<double>>(alto, std::vector<double>(ancho)));
 
     int iterations = 0; // Contador de iteraciones
     int frame_counter = 0; // Contador para los frames
@@ -45,16 +45,16 @@ void temperaturas(int ancho, int alto, double temp_sup, double temp_lat, double 
                 phi[i][j] = nuevo_valor; // Actualizar temperatura
             }
         }
-	}/*
+	}
         // Guardar el estado de la grilla para los frames si es necesario
         if (iterations % iterations_per_frame == 0 && frame_counter < frames) {
             for (int i = 0; i < alto; ++i) {
                 for (int j = 0; j < ancho; ++j) {
-                    animation[frame_counter][i][j] = phi[i][j];
+                    animation[frame_counter] = phi;
                 }
             }
             ++frame_counter;
-        }*/
+        }
 
         ++iterations;
     }
