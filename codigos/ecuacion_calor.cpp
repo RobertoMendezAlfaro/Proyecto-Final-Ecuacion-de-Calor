@@ -3,18 +3,38 @@
 #include <vector>
 #include <cmath>
 #include "ecuacion_calor.hpp"
-#include <omp.h>
 
+// Constructor por defecto
+EcuacionCalor::EcuacionCalor() : omega(0.0), frames(10), ancho(40), alto(80) {}
 
-// Función para resolver la ecuación de calor en 2D usando el método de Gauss-Seidel
-void temperaturas(int ancho, int alto, double temp_sup, double temp_lat, double temp_init, 
-                  double omega, int frames, int iterations_per_frame) {
-    // Crear grilla bidimensional (inicializada con la temperatura inicial)
+// Constructor con parámetros
+EcuacionCalor::EcuacionCalor(double omega, int frames, int ancho, int alto)
+    : omega(omega), frames(frames), ancho(ancho), alto(alto) {}
+
+// Constructor copia
+EcuacionCalor::EcuacionCalor(const EcuacionCalor &obj)
+    : omega(obj.omega), frames(obj.frames), ancho(obj.ancho), alto(obj.alto) {}
+
+// Operador de asignación
+EcuacionCalor &EcuacionCalor::operator=(const EcuacionCalor &obj) {
+    if (this != &obj) {
+        omega = obj.omega;
+        frames = obj.frames;
+        ancho = obj.ancho;
+        alto = obj.alto;
+    }
+    return *this;
+}
+
+// Destructor
+EcuacionCalor::~EcuacionCalor() {}
+
+// Método para calcular las temperaturas
+void EcuacionCalor::temperaturas(double temp_sup, double temp_lat, double temp_init, int iterations_per_frame) {
     std::vector<std::vector<double>> phi(alto + 1, std::vector<double>(ancho + 1, temp_init));
-    std::vector<std::vector<double>> phi_copy = phi; // Para comparar cambios
+    std::vector<std::vector<double>> phi_copy = phi;
 
-    // condiciones de frontera
-
+    // Condiciones de frontera
     for (int j = 0; j <= ancho; ++j) {
         phi[0][j] = temp_sup; // Borde superior
     }
@@ -23,43 +43,39 @@ void temperaturas(int ancho, int alto, double temp_sup, double temp_lat, double 
     }
     phi[0][0] = (temp_sup + temp_lat) / 2.0; // Esquina superior izquierda
 
-    // Almacenamiento de frames para análisis
+    // Almacenamiento de frames
     std::vector<std::vector<std::vector<double>>> animation(frames, std::vector<std::vector<double>>(alto, std::vector<double>(ancho)));
 
-    int iterations = 0; // Contador de iteraciones
-    int frame_counter = 0; // Contador para los frames
-    double delta = 1.0; // Cambios iniciales
+    int iterations = 0;
+    int frame_counter = 0;
+    double delta = 1.0;
 
-    // Iteración hasta que el cambio sea pequeño o se alcance el máximo 
     while (delta > 1e-5) {
-        delta = 0.0; // Reinicia el cambio máximo
-		     
-	#pragma omp parallel //inicio de region en paralelo
+        delta = 0.0;
+
+        #pragma omp parallel //inicio de region en paralelo
         {
-            #pragma omp for reduction(max: delta) //paralelizacion de for i con reduction en delta ya que los hilos la accesan de modo concurrente	  
-        for (int i = 1; i < alto; ++i) {
-            for (int j = 1; j < ancho; ++j) {
-                // Aplicar fórmula de Gauss-Seidel con sobrerrelajación
-                double nuevo_valor = (1 + omega) * 0.25 * (phi[i + 1][j] + phi[i - 1][j] + phi[i][j + 1] + phi[i][j - 1]) - omega * phi[i][j];
-                delta = std::max(delta, std::fabs(nuevo_valor - phi[i][j])); // Actualizar el cambio máximo
-                phi[i][j] = nuevo_valor; // Actualizar temperatura
+            #pragma omp for reduction(max: delta) //paralelizacion de for i con reduction en delta ya que los hilos las accesan de modo concurrente
+            for (int i = 1; i < alto; ++i) {
+                for (int j = 1; j < ancho; ++j) {
+                    double nuevo_valor = (1 + omega) * 0.25 * (phi[i + 1][j] + phi[i - 1][j] + phi[i][j + 1] + phi[i][j - 1]) - omega * phi[i][j];
+                    delta = std::max(delta, std::fabs(nuevo_valor - phi[i][j]));
+                    phi[i][j] = nuevo_valor;
+                }
             }
         }
-	}
-        // Guardar el estado de la grilla para los frames si es necesario
+
         if (iterations % iterations_per_frame == 0 && frame_counter < frames) {
             for (int i = 0; i < alto; ++i) {
                 for (int j = 0; j < ancho; ++j) {
-                    animation[frame_counter] = phi;
+                    animation[frame_counter][i][j] = phi[i][j];
                 }
             }
             ++frame_counter;
         }
-
         ++iterations;
     }
-    
-    // Imprimir resultados finales
+
     std::cout << "Convergencia alcanzada en " << iterations << " iteraciones.\n";
     std::cout << "Estado final de la grilla:\n";
     for (int i = 0; i <= alto; ++i) {
@@ -69,31 +85,4 @@ void temperaturas(int ancho, int alto, double temp_sup, double temp_lat, double 
         std::cout << "\n";
     }
 }
-
-
-
-//Constructor por defecto
-
-EcuacionCalor::EcuacionCalor(){}
-
-
-
-
-//Constructor copia
-
-
-
-
-
-//Operador de asignacion en caso de usarse
-
-
-
-
-//Destructor
-
-EcuacionCalor::~EcuacionCalor(){}
-
-
-//Funciones y sobrecargas
 
