@@ -2,22 +2,20 @@
 #include "ecuacion_calor.hpp"
 
 int main() {
-    // Parámetros de entrada
-    double temp_sup = 100.0;
-    double temp_lat = 200.0;
-    double temp_init = 20.0;
-    int ancho = 40;
-    int alto = 80;
-    double omega = 0.0;
-    int frames = 10;
-    int iterations_per_frame = 200;
-
+    /* Parámetros utilizados
+    temp_sup = 100.0
+    temp_lat = 200.0
+    temp_init = 20.0
+    ancho = 100
+    alto = 50
+    omega = 0.0 */
+    
     // Crear objeto de la clase EcuacionCalor utilizando el constructor con parámetros
-    EcuacionCalor ec(omega, frames, ancho, alto);
+    EcuacionCalor ec(0.0, 100, 50);
 
     // Llamar a la función para calcular temperaturas
     std::cout << "A continuación se resuelve la ecuación de calor:.\n";
-    ec.temperaturas(temp_sup, temp_lat, temp_init, iterations_per_frame);
+    ec.temperaturas(100.0, 200.0, 20.0);
 
     return 0;
 }

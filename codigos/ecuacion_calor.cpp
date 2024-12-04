@@ -5,21 +5,20 @@
 #include "ecuacion_calor.hpp"
 
 // Constructor por defecto
-EcuacionCalor::EcuacionCalor() : omega(0.0), frames(10), ancho(40), alto(80) {}
+EcuacionCalor::EcuacionCalor() : omega(0.0), ancho(40), alto(80) {}
 
 // Constructor con parámetros
-EcuacionCalor::EcuacionCalor(double omega, int frames, int ancho, int alto)
-    : omega(omega), frames(frames), ancho(ancho), alto(alto) {}
+EcuacionCalor::EcuacionCalor(double omega, int ancho, int alto)
+    : omega(omega), ancho(ancho), alto(alto) {}
 
 // Constructor copia
 EcuacionCalor::EcuacionCalor(const EcuacionCalor &obj)
-    : omega(obj.omega), frames(obj.frames), ancho(obj.ancho), alto(obj.alto) {}
+    : omega(obj.omega), ancho(obj.ancho), alto(obj.alto) {}
 
 // Operador de asignación
 EcuacionCalor &EcuacionCalor::operator=(const EcuacionCalor &obj) {
     if (this != &obj) {
         omega = obj.omega;
-        frames = obj.frames;
         ancho = obj.ancho;
         alto = obj.alto;
     }
@@ -30,7 +29,7 @@ EcuacionCalor &EcuacionCalor::operator=(const EcuacionCalor &obj) {
 EcuacionCalor::~EcuacionCalor() {}
 
 // Método para calcular las temperaturas
-void EcuacionCalor::temperaturas(double temp_sup, double temp_lat, double temp_init, int iterations_per_frame) {
+void EcuacionCalor::temperaturas(double temp_sup, double temp_lat, double temp_init) {
     std::vector<std::vector<double>> phi(alto + 1, std::vector<double>(ancho + 1, temp_init));
     std::vector<std::vector<double>> phi_copy = phi;
 
@@ -43,14 +42,10 @@ void EcuacionCalor::temperaturas(double temp_sup, double temp_lat, double temp_i
     }
     phi[0][0] = (temp_sup + temp_lat) / 2.0; // Esquina superior izquierda
 
-    // Almacenamiento de frames
-    std::vector<std::vector<std::vector<double>>> animation(frames, std::vector<std::vector<double>>(alto, std::vector<double>(ancho)));
-
     int iterations = 0;
-    int frame_counter = 0;
     double delta = 1.0;
 
-    while (delta > 1e-5) {
+    while (delta > 1e-7) {
         delta = 0.0;
 
         #pragma omp parallel //inicio de region en paralelo
@@ -63,15 +58,6 @@ void EcuacionCalor::temperaturas(double temp_sup, double temp_lat, double temp_i
                     phi[i][j] = nuevo_valor;
                 }
             }
-        }
-
-        if (iterations % iterations_per_frame == 0 && frame_counter < frames) {
-            for (int i = 0; i < alto; ++i) {
-                for (int j = 0; j < ancho; ++j) {
-                    animation[frame_counter][i][j] = phi[i][j];
-                }
-            }
-            ++frame_counter;
         }
         ++iterations;
     }
