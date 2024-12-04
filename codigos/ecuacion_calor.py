@@ -6,11 +6,37 @@ from matplotlib import cm
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 
-# Función para analizar la evolución temporal de una placa con temperatura inicial temp_init a
-# la que se le aplica una temperatura de temp_sup en el borde superior y una de temp_lat en el
-# borde izquierdo. ancho y alto definien el tamaño de la grilla, omega es un parámetro del método
-# utilizado y frames es la cantidad de imágenes que deseamos guardar del sistema
 def temperaturas(temp_sup, temp_lat, temp_init, ancho, alto, omega, frames):
+    """
+    Analiza la evolución temporal de la temperatura en una grilla, utilizando el método de Gauss-Seidel para la aproximación en el espacio y tiempo. Los resultados se guardan en una animación de fotogramas para su visualización.
+
+    Parametros
+    ----------
+    temp_sup : float
+        Temperatura en el borde superior.
+    temp_lat : float
+        Temperatura en el borde izquierdo.
+    temp_init : float
+        Temperatura inicial.
+    ancho : int
+        Número de celdas en la drección horizontal de la grilla.
+    alto : int
+        Número de celdas en la dirección vertical de la grilla.
+    omega : float
+        Parámetro de relajación del método de Gauss-Seidel.
+    frames : int
+        Número de fotogramas que se desean para la animación.
+
+    Returns
+    -------
+    numpy.ndarray
+        Una matriz que contiene las diferentes distribuciones de temperatura para cada fotograma.
+
+    Examples
+    --------
+    >>> temperaturas(100, 200, 20, 50, 100, 0.5, 50)
+    Devuelve una matriz que representa la evolución de las temperaturas en la placa durante 50 fotogramas.
+    """
 
     phi = np.zeros((ancho + 1, alto + 1), dtype=float) # Grilla bidimensional
 
@@ -79,6 +105,19 @@ animation = ax.imshow(heatmap[0,:,:], cmap="inferno")
 
 # Se crea la función que va pasando los fotogramas
 def animate(frame):
+    """
+    Actualiza el fotograma actual en la animación.
+
+    Parametros
+    ----------
+    frame : int
+        Índice del fotograma a actualizar.
+
+    Returns
+    -------
+    animation : matplotlib.image.AxesImage
+        El objeto de imagen actualizado con el nuevo fotograma.
+    """
     new_frame = heatmap[frame,:,:]
     animation.set_data(new_frame)
     return animation
