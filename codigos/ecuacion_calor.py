@@ -12,7 +12,7 @@ from matplotlib.animation import FuncAnimation
 # utilizado y frames es la cantidad de imágenes que deseamos guardar del sistema
 def temperaturas(temp_sup, temp_lat, temp_init, ancho, alto, omega, frames):
 
-    phi = np.zeros((ancho + 1, alto + 1), dtype=float) # Grilla bidimensional
+    phi = np.zeros((alto + 1, ancho + 1), dtype=float) # Grilla bidimensional
 
     phi[:, :] = temp_init # Condición inicial en el interior del sistema
 
@@ -24,7 +24,7 @@ def temperaturas(temp_sup, temp_lat, temp_init, ancho, alto, omega, frames):
 
     phi_copy = phi.copy() # Para comparar el error con la nueva grilla
 
-    animation = np.zeros((frames, ancho, alto))# Para almacenar copias del sistema para animar
+    animation = np.zeros((frames, alto, ancho))# Para almacenar copias del sistema para animar
 
     iterations = 0 # Contador para las iteraciones
 
@@ -36,9 +36,9 @@ def temperaturas(temp_sup, temp_lat, temp_init, ancho, alto, omega, frames):
 
     while delta > 1e-7:
         # Método Gauss Seidel para aproximar el cambio de T en el espacio con el tiempo
-        for i in range(1, ancho):
+        for i in range(1, alto):
 
-            for j in range(1, alto):
+            for j in range(1, ancho):
 
                 phi[i,j] = (1 + omega) * 0.25 * (phi[i + 1, j] + phi[i - 1, j] + phi[i, j + 1] + phi[i, j - 1]) - omega * phi[i, j]
 
@@ -70,7 +70,7 @@ total_frames = 50 # Cantidad de fotogramas que se desea que muestre la animació
 # Implementación de la animación
 
 # Se guardan los resultados de la función iterativa
-heatmap = temperaturas(100, 200, 20, 50, 100, 0, total_frames)
+heatmap = temperaturas(100, 200, 20, 100, 80, 0, total_frames)
 
 fig, ax = plt.subplots()
 
